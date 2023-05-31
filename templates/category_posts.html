@@ -1,0 +1,73 @@
+<!-- Наследование от шаблона default.html -->
+{% extends 'flatpages/default.html' %}
+
+<!-- Подключение фильтров -->
+{% load custom_filters %}
+<!-- Подключение тегов -->
+{% load custom_tags %}
+
+<!-- Название -->
+{% block title %}
+News and articles
+{% endblock title %}
+
+<!-- Посты, соответствующие выбранной категории -->
+{% block content %}
+    <h1>News and articles from category '{{ category }}'</h1>
+        {% if is_not_subscriber %}
+            <h6><button><a href="{% url 'subscribe' category.id %}">Subcribe to <b>{{ category }}</b></a></button><br></h6>
+        {% endif %}
+    <hr>
+    {% if category_posts %} <!-- Выводим посты только если они есть -->
+        <table cellpadding="10" align="center">
+            <tr>
+                <td>TITLE</td>
+                <td>DATE</td>
+                <td>PREVIEW</td>
+                <td>AUTHOR</td>
+                <td>CATEGORY</td>
+            </tr>
+            {% for post in category_posts %}
+            <tr>
+                <td><a href="{% url 'post_detail' post.id %}">{{ post.title|censor }}</a></td>
+                <td>{{ post.time_add|date:'d M Y' }}</td>
+                <!-- Количество выводимых слов статьи ограничено -->
+                <td>{{ post.text|censor|truncatechars:20 }}</td>
+                <td>{{ post.author }}</td>
+                <td>
+                    {% for category in post.categories.all %}
+                    | <a href="{% url 'category_post_list' category.id %}">{{ category }}</a> |
+                    {% endfor %}
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <!-- Если постов нет, то выводим соответствующее сообщение -->
+        <h2>There are no posts!</h2>
+    {% endif %}
+
+    <!-- Добавление пагинации на странице -->
+
+    <!-- Информация о предыдущих страницах -->
+    {% if page_obj.has_previous %}
+        <a href="?{% url_replace page=1 %}" >1</a>
+        {% if page_obj.previous_page_number != 1 %}
+        ...
+        <a href="?{% url_replace page=page_obj.previous_page_number %}">{{ page_obj.previous_page_number }}</a>
+        {% endif %}
+    {% endif %}
+
+    <!-- Информация о текущей странице -->
+    {{ page_obj.number }}
+
+    <!-- Информация о следующих страницах -->
+    {% if page_obj.has_next %}
+        <a href="?{% url_replace page=page_obj.next_page_number %}">{{ page_obj.next_page_number }}</a>
+        {% if paginator.num_pages != page_obj.next_page_number %}
+            ...
+            <a href="?{% url_replace page=page_obj.paginator.num_pages %}">{{ page_obj.paginator.num_pages }}</a>
+       {% endif %}
+   {% endif %}
+
+{% endblock content %}
