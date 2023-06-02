@@ -164,7 +164,7 @@ ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
-ACCOUNT_EMAIL_VERIFICATION = 'mandatory'
+ACCOUNT_EMAIL_VERIFICATION = 'none'
 
 # Чтобы allauth распознал кастомизированную форму вместо формы по умолчанию
 ACCOUNT_FORMS = {'signup': 'protect.forms.BasicSignupForm'}
@@ -182,3 +182,10 @@ DEFAULT_FROM_EMAIL = ''
 
 APSCHEDULER_DATETIME_FORMAT = 'N j, Y, f:s a'   # формат даты, которую будет воспринимать задачник
 APSCHEDULER_RUN_NOW_TIMEOUT = 25  # если задача не выполняется за 25 секунд, то она автоматически снимается
+
+# Celery + Redis
+CELERY_BROKER_URL = ''
+CELERY_RESULT_BACKEND = ''
+CELERY_ACCEPT_CONTENT = ['application/json']
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'

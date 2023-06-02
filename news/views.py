@@ -15,6 +15,9 @@ from django.contrib.auth.mixins import PermissionRequiredMixin
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import AnonymousUser
 
+from .signals import send_notification
+
+
 # Список всех постов
 class PostList(ListView):
     model = Post  # выводим посты
@@ -56,12 +59,19 @@ class PostCreate(PermissionRequiredMixin, CreateView):
 
     def post(self, request, *args, **kwargs):
         super().post(request, *args, **kwargs)
+        # отправка сообщения пользователю о новом посте в категории
+        post = Post.objects.latest("id")
+        categories = post.categories.all()
+        subscribers: list[str] = []
+        for category in categories:
+            subscribers += category.subscribers.all()
+        subscribers = [subscriber.email for subscriber in subscribers]
+        send_notification(post.preview(), post.pk, post.title, subscribers)
         return redirect(f'/news/{Post.objects.latest("id").id}')
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         return context
-
 
 # Представление для изменения поста с проверкой прав (форма и шаблон как для создания поста)
 class PostEdit(PermissionRequiredMixin, UpdateView):

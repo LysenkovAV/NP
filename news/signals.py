@@ -28,12 +28,12 @@ def send_notification(preview, pk, title, subscribers):
 
 
 # Отправка письма пользователям, подписанным на категорию, при появлении нового поста в этой категории (по сигналу)
-@receiver(m2m_changed, sender=PostCategory)
-def notify_about_new_post(sender, instance, **kwargs):
-    if kwargs['action'] == 'post_add':
-        categories = instance.categories.all()
-        subscribers: list[str] = []
-        for category in categories:
-            subscribers += category.subscribers.all()
-        subscribers = [subscriber.email for subscriber in subscribers]
-        send_notification(instance.preview(), instance.pk, instance.title, subscribers)
+# @receiver(m2m_changed, sender=PostCategory)
+# def notify_about_new_post(sender, instance, **kwargs):
+#     if kwargs['action'] == 'post_add':
+#         categories = instance.categories.all()
+#         subscribers: list[str] = []
+#         for category in categories:
+#             subscribers += category.subscribers.all()
+#         subscribers = [subscriber.email for subscriber in subscribers]
+#         send_notification(instance.preview(), instance.pk, instance.title, subscribers)
